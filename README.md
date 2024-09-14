@@ -4,4 +4,4 @@ An open-source timeline reservation calendar built with Next.js, Day.js, Tailwin
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://github.com/bahadirk5/timeline-calendar/blob/main/public/timeline-calendar.png)
