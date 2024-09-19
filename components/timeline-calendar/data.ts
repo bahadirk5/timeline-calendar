@@ -116,4 +116,19 @@ export const units = [
       { id: 3, start: "2024-09-21", end: "2024-09-30", price: 445 },
     ],
   },
+  {
+    id: 4,
+    name: "Huge Room",
+    units: [
+      { id: 13, name: "Room 113", status: "Clean" },
+      { id: 14, name: "Room 114", status: "Clean" },
+      { id: 15, name: "Room 115", status: "Needs Cleaning" },
+      { id: 16, name: "Room 116", status: "Clean" },
+    ],
+    prices: [
+      { id: 1, start: "2024-09-01", end: "2024-09-10", price: 400 },
+      { id: 2, start: "2024-09-11", end: "2024-09-20", price: 425 },
+      { id: 3, start: "2024-09-21", end: "2024-09-30", price: 445 },
+    ],
+  },
 ];

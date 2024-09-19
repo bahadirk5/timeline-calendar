@@ -54,14 +54,17 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div>
-      <div className="flex flex-col gap-2 my-5">
-        <TimelineCalendar />
-      </div>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        <div className="flex flex-col gap-2 my-5">
+          <TimelineCalendar />
+        </div>
+      </main>
 
       <footer className="border-t p-4">
-        <Link href="/https://github.com/bahadirk5/timeline-calendar">
-          The source code is available on <span className="underline">GitHub.</span>
+        <Link href="https://github.com/bahadirk5/timeline-calendar">
+          The source code is available on{" "}
+          <span className="underline">GitHub.</span>
         </Link>
       </footer>
     </div>

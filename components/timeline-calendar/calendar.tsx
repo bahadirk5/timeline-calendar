@@ -6,15 +6,17 @@ import { reservations, units } from "./data";
 import BookingComponent from "./booking-component";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { cellWidth, drawGrid, drawHeaders, drawPricesAndRooms } from "./utils";
+import { cellWidth, drawGrid, drawPricesAndRooms } from "./utils";
 
 export function TimelineCalendar() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [currentDate, setCurrentDate] = useState(dayjs().startOf("month"));
-  const daysCount = currentDate.daysInMonth(); // Gün sayısını ayın sonuna göre ayarlayın
+  const daysCount = currentDate.daysInMonth();
   const today = dayjs().startOf("day");
 
   useEffect(() => {
@@ -25,31 +27,57 @@ export function TimelineCalendar() {
     if (canvas && container && sidebar) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        // Device pixel ratio kullanarak çözünürlüğü artırma
         const dpr = window.devicePixelRatio || 1;
         canvas.width = cellWidth * daysCount * dpr;
         canvas.height = sidebar.scrollHeight * dpr;
         ctx.scale(dpr, dpr);
 
-        // Canvas boyutlarını CSS ile ayarlama
         canvas.style.width = `${cellWidth * daysCount}px`;
         canvas.style.height = `${sidebar.scrollHeight}px`;
 
-        // Genel yapı
-        ctx.fillStyle = "rgb(255, 255, 255)"; // Beyaz arka plan
+        ctx.fillStyle = "rgb(255, 255, 255)";
         ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
-        // Tarih başlıkları
-        drawHeaders(ctx, currentDate, daysCount, today);
-
-        // Hücre çizgileri
         drawGrid(ctx, daysCount);
-
-        // Fiyatlandırma ve oda bilgileri
         drawPricesAndRooms(ctx, currentDate, daysCount);
       }
     }
   }, [currentDate, daysCount, today]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const header = headerRef.current;
+    const sidebar = sidebarRef.current;
+    const content = contentRef.current;
+
+    if (container && header && sidebar && content) {
+      let isScrolling = false;
+
+      const handleScroll = (e: Event) => {
+        if (!isScrolling) {
+          isScrolling = true;
+          requestAnimationFrame(() => {
+            const target = e.target as HTMLElement;
+            if (target === content) {
+              header.scrollLeft = content.scrollLeft;
+              sidebar.scrollTop = content.scrollTop;
+            } else if (target === sidebar) {
+              content.scrollTop = sidebar.scrollTop;
+            }
+            isScrolling = false;
+          });
+        }
+      };
+
+      content.addEventListener("scroll", handleScroll);
+      sidebar.addEventListener("scroll", handleScroll);
+
+      return () => {
+        content.removeEventListener("scroll", handleScroll);
+        sidebar.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, []);
 
   const handlePreviousMonth = () => {
     setCurrentDate(currentDate.subtract(1, "month").startOf("month"));
@@ -65,7 +93,10 @@ export function TimelineCalendar() {
 
   return (
     <div className="mx-auto w-full max-w-screen-xl">
-      <div className="mb-4 flex items-center justify-end">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {currentDate.format("MMMM YYYY")}
+        </h2>
         <div className="flex gap-1">
           <Button variant="outline" size="icon" onClick={handlePreviousMonth}>
             &lt;
@@ -78,78 +109,115 @@ export function TimelineCalendar() {
           </Button>
         </div>
       </div>
-      <div className="relative flex w-full rounded-lg border-[2px]">
+      <div className="relative flex h-[calc(100vh-200px)] w-full overflow-hidden rounded-lg border-[2px]">
         <div
           ref={sidebarRef}
-          className="sticky left-0 top-0 z-10 min-w-[250px] overflow-y-auto bg-background"
+          className="sticky left-0 top-0 z-20 flex min-w-[250px] flex-col bg-background overflow-y-auto"
         >
-          <div className="flex h-[50px] items-center">
-            <h2 className="px-4 text-2xl font-semibold tracking-tight">
-              {currentDate.format("MMMM YYYY")}
-            </h2>
+          <div>
+            <h3 className="w-full items-center flex px-4 h-[50px] font-semibold border-r">
+              Units
+            </h3>
           </div>
-          {units.map((unitType) => (
-            <div key={unitType.id}>
-              <div className="flex h-[50px] items-center rounded bg-muted/40">
-                <p className="px-4 font-semibold tracking-tight">
-                  {unitType.name}
-                </p>
-              </div>
-              {unitType.units.map((room) => (
-                <div
-                  key={room.id}
-                  className="flex h-[50px] items-center justify-between px-4"
-                >
-                  <p className="text-muted-foreground">{room.name}</p>
-                  <p
-                    className={cn(
-                      "rounded-md px-2 py-1 text-xs font-medium",
-                      room.status === "Clean"
-                        ? " bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground",
-                    )}
-                  >
-                    {room.status}
+          <div className="flex-1">
+            {units.map((unitType) => (
+              <div key={unitType.id}>
+                <div className="flex h-[50px] items-center bg-muted border-y">
+                  <p className="px-4 font-semibold tracking-tight">
+                    {unitType.name}
                   </p>
                 </div>
-              ))}
-            </div>
-          ))}
+                {unitType.units.map((room) => (
+                  <div
+                    key={room.id}
+                    className="flex h-[50px] items-center justify-between px-4"
+                  >
+                    <p className="text-muted-foreground">{room.name}</p>
+                    <p
+                      className={cn(
+                        "rounded-md px-2 py-1 text-xs font-medium",
+                        room.status === "Clean"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {room.status}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="relative"></div>
-        <div ref={containerRef} className="relative w-full overflow-x-scroll">
-          <canvas ref={canvasRef} className="border-collapse" />
-          <div className="absolute left-0 top-0">
-            {reservations.map((reservation, index) => {
-              const unitType = units.find((rt) =>
-                rt.units.some((r) => r.id === reservation.unitId),
-              );
-              const unitIndex =
-                unitType?.units.findIndex((r) => r.id === reservation.unitId) ||
-                0;
-              const unitTypeIndex = units.findIndex(
-                (rt) => rt.id === unitType?.id,
-              );
-              const previousRoomTypesCount = units
-                .slice(0, unitTypeIndex)
-                .reduce((acc, rt) => acc + rt.units.length, 0);
+        <div className="relative flex-1 overflow-hidden">
+          <div
+            ref={headerRef}
+            className="sticky top-0 z-10 overflow-hidden border-b bg-background"
+          >
+            <div
+              className="flex h-[50px]"
+              style={{ width: `${cellWidth * daysCount}px` }}
+            >
+              {Array.from({ length: daysCount }).map((_, index) => {
+                const date = currentDate.add(index, "day");
+                const isToday = date.isSame(today, "day");
+                return (
+                  <div
+                    key={index}
+                    className={cn(
+                      "flex h-full w-[100px] flex-shrink-0 items-center justify-center text-sm font-semibold border-r",
+                      isToday && "bg-muted"
+                    )}
+                  >
+                    {date.format("ddd D")}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div
+            ref={contentRef}
+            className="absolute inset-0 top-[50px] overflow-auto"
+          >
+            <div
+              ref={containerRef}
+              className="relative"
+              style={{ width: `${cellWidth * daysCount}px`, minHeight: "100%" }}
+            >
+              <canvas ref={canvasRef} className="absolute left-0 top-0" />
+              <div className="absolute left-0 top-0">
+                {reservations.map((reservation, index) => {
+                  const unitType = units.find((rt) =>
+                    rt.units.some((r) => r.id === reservation.unitId)
+                  );
+                  const unitIndex =
+                    unitType?.units.findIndex(
+                      (r) => r.id === reservation.unitId
+                    ) || 0;
+                  const unitTypeIndex = units.findIndex(
+                    (rt) => rt.id === unitType?.id
+                  );
+                  const previousRoomTypesCount = units
+                    .slice(0, unitTypeIndex)
+                    .reduce((acc, rt) => acc + rt.units.length, 0);
 
-              const yOffset =
-                50 + // Başlık yüksekliği
-                (unitTypeIndex + 1) * 50 + // Oda tipi başlıkları
-                (previousRoomTypesCount + unitIndex) * 50; // Oda satırı
+                  const yOffset =
+                    (unitTypeIndex + 1) * 50 + // Oda tipi başlıkları
+                    (previousRoomTypesCount + unitIndex) * 50; // Oda satırı
 
-              return (
-                <BookingComponent
-                  key={index}
-                  booking={reservation}
-                  cellWidth={cellWidth}
-                  currentDate={currentDate}
-                  yOffset={yOffset}
-                  daysCount={daysCount} // daysCount prop olarak geçiliyor
-                />
-              );
-            })}
+                  return (
+                    <BookingComponent
+                      key={index}
+                      booking={reservation}
+                      cellWidth={cellWidth}
+                      currentDate={currentDate}
+                      yOffset={yOffset}
+                      daysCount={daysCount}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
