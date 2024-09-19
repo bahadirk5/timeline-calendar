@@ -83,7 +83,7 @@ export const units = [
     prices: [
       { id: 1, start: "2024-09-01", end: "2024-09-10", price: 255 },
       { id: 2, start: "2024-09-11", end: "2024-09-20", price: 300 },
-      { id: 3, start: "2024-09-21", end: "2024-09-31", price: 155 },
+      { id: 3, start: "2024-09-21", end: "2024-09-30", price: 155 },
     ],
   },
   {
@@ -98,7 +98,7 @@ export const units = [
     prices: [
       { id: 1, start: "2024-09-01", end: "2024-09-10", price: 400 },
       { id: 2, start: "2024-09-11", end: "2024-09-20", price: 425 },
-      { id: 3, start: "2024-09-21", end: "2024-09-31", price: 445 },
+      { id: 3, start: "2024-09-21", end: "2024-09-30", price: 445 },
     ],
   },
   {
@@ -113,7 +113,7 @@ export const units = [
     prices: [
       { id: 1, start: "2024-09-01", end: "2024-09-10", price: 400 },
       { id: 2, start: "2024-09-11", end: "2024-09-20", price: 425 },
-      { id: 3, start: "2024-09-21", end: "2024-09-31", price: 445 },
+      { id: 3, start: "2024-09-21", end: "2024-09-30", price: 445 },
     ],
   },
 ];
