@@ -123,7 +123,9 @@ export const units = [
       { id: 13, name: "Room 113", status: "Clean" },
       { id: 14, name: "Room 114", status: "Clean" },
       { id: 15, name: "Room 115", status: "Needs Cleaning" },
-      { id: 16, name: "Room 116", status: "Clean" },
+      { id: 16, name: "Room 117", status: "Clean" },
+      { id: 17, name: "Room 118", status: "Clean" },
+      { id: 18, name: "Room 119", status: "Clean" },
     ],
     prices: [
       { id: 1, start: "2024-09-01", end: "2024-09-10", price: 400 },

@@ -19,6 +19,11 @@ export function TimelineCalendar() {
   const daysCount = currentDate.daysInMonth();
   const today = dayjs().startOf("day");
 
+  // Calculate total height of all units
+  const totalUnitsHeight = units.reduce((acc, unitType) => {
+    return acc + 50 + unitType.units.length * 50;
+  }, 0);
+
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -29,11 +34,11 @@ export function TimelineCalendar() {
       if (ctx) {
         const dpr = window.devicePixelRatio || 1;
         canvas.width = cellWidth * daysCount * dpr;
-        canvas.height = sidebar.scrollHeight * dpr;
+        canvas.height = totalUnitsHeight * dpr;
         ctx.scale(dpr, dpr);
 
         canvas.style.width = `${cellWidth * daysCount}px`;
-        canvas.style.height = `${sidebar.scrollHeight}px`;
+        canvas.style.height = `${totalUnitsHeight}px`;
 
         ctx.fillStyle = "rgb(255, 255, 255)";
         ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
@@ -42,7 +47,7 @@ export function TimelineCalendar() {
         drawPricesAndRooms(ctx, currentDate, daysCount);
       }
     }
-  }, [currentDate, daysCount, today]);
+  }, [currentDate, daysCount, today, totalUnitsHeight]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -182,7 +187,10 @@ export function TimelineCalendar() {
             <div
               ref={containerRef}
               className="relative"
-              style={{ width: `${cellWidth * daysCount}px`, minHeight: "100%" }}
+              style={{ 
+                width: `${cellWidth * daysCount}px`, 
+                height: `${totalUnitsHeight}px`
+              }}
             >
               <canvas ref={canvasRef} className="absolute left-0 top-0" />
               <div className="absolute left-0 top-0">
@@ -202,8 +210,8 @@ export function TimelineCalendar() {
                     .reduce((acc, rt) => acc + rt.units.length, 0);
 
                   const yOffset =
-                    (unitTypeIndex + 1) * 50 + // Oda tipi başlıkları
-                    (previousRoomTypesCount + unitIndex) * 50; // Oda satırı
+                    (unitTypeIndex + 1) * 50 + // Unit type headers
+                    (previousRoomTypesCount + unitIndex) * 50; // Unit rows
 
                   return (
                     <BookingComponent
