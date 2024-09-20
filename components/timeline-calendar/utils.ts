@@ -17,14 +17,18 @@ export type UnitType = {
   }[];
 };
 
-export const cellWidth = 100; // Geniş hücre genişliği
+export const cellWidth = 100;
 
 export function drawGrid(ctx: CanvasRenderingContext2D, daysCount: number) {
+  const borderColor = "hsl(0 0% 89.8%)";
+  ctx.lineWidth = 1;
+
   for (let i = 0; i <= daysCount; i++) {
     const x = i * cellWidth;
-    ctx.moveTo(x, 50);
+    ctx.beginPath();
+    ctx.moveTo(x, 0); // Changed from 50 to 0 to start from the very top
     ctx.lineTo(x, ctx.canvas.height);
-    ctx.strokeStyle = "rgb(100, 116, 139)"; // Gri çizgiler
+    ctx.strokeStyle = borderColor;
     ctx.stroke();
   }
 }
@@ -34,15 +38,24 @@ export function drawPricesAndRooms(
   currentDate: Dayjs,
   daysCount: number
 ) {
-  let currentY = 0; // Start at the top of the canvas
+  let currentY = 0;
+  const borderColor = "hsl(0 0% 89.8%)";
+  const foregroundColor = "hsl(0 0% 3.9%)"; // Changed to a darker color for better visibility
+  ctx.lineWidth = 1;
 
   units.forEach((unitType: UnitType) => {
-    // Draw unit type header
-    ctx.fillStyle = "rgb(245, 245, 245)";
-    ctx.fillRect(0, currentY, ctx.canvas.width, 50);
-    ctx.fillStyle = "rgb(0, 0, 0)";
+    // Draw top border for each unit type
+    ctx.beginPath();
+    ctx.moveTo(0, currentY);
+    ctx.lineTo(ctx.canvas.width, currentY);
+    ctx.strokeStyle = borderColor;
+    ctx.stroke();
 
-    currentY += 50; // Move down after unit type header
+    // Draw unit type header
+    ctx.fillStyle = "hsl(0 0% 96.1% / 0.4)";
+    ctx.fillRect(0, currentY, ctx.canvas.width, 50);
+
+    currentY += 50;
 
     // Draw prices
     unitType.prices.forEach((price) => {
@@ -56,13 +69,15 @@ export function drawPricesAndRooms(
         const diff = date.diff(currentDate, "day");
         if (diff >= 0 && diff < daysCount) {
           const x = diff * cellWidth;
-          ctx.fillStyle = "rgba(241, 245, 249, 0.4)";
-          ctx.fillRect(x, currentY - 50, cellWidth, 50); // Draw in the unit type header row
-          ctx.fillStyle = "rgb(100, 116, 139)";
-          ctx.font = "14px Arial";
+          ctx.fillStyle = "hsl(0 0% 96.1% / 0.4)";
+          ctx.fillRect(x, currentY - 50, cellWidth, 50);
+          ctx.fillStyle = foregroundColor;
+          ctx.font = "12px Arial";
+          const priceText = `$${price.price}`;
+          const textWidth = ctx.measureText(priceText).width;
           ctx.fillText(
-            `$${price.price}`,
-            x + cellWidth / 2 - ctx.measureText(`$${price.price}`).width / 2,
+            priceText,
+            x + (cellWidth - textWidth) / 2,
             currentY - 25
           );
         }
@@ -74,16 +89,19 @@ export function drawPricesAndRooms(
       ctx.beginPath();
       ctx.moveTo(0, currentY);
       ctx.lineTo(ctx.canvas.width, currentY);
-      ctx.strokeStyle = "rgb(200, 200, 200)";
+      ctx.strokeStyle = borderColor;
       ctx.stroke();
 
-      currentY += 50; // Move down for next room
+      currentY += 50;
     });
-
-    // Draw bottom border for the unit type
-    ctx.beginPath();
-    ctx.moveTo(0, currentY);
-    ctx.lineTo(ctx.canvas.width, currentY);
-    ctx.stroke();
   });
+
+  // Draw bottom border for the last unit type
+  ctx.beginPath();
+  ctx.moveTo(0, currentY);
+  ctx.lineTo(ctx.canvas.width, currentY);
+  ctx.strokeStyle = borderColor;
+  ctx.stroke();
+
+  console.log("Finished drawing prices and rooms");
 }

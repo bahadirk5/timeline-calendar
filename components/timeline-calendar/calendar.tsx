@@ -127,7 +127,7 @@ export function TimelineCalendar() {
           <div className="flex-1">
             {units.map((unitType) => (
               <div key={unitType.id}>
-                <div className="flex h-[50px] items-center bg-muted border-y">
+                <div className="flex h-[50px] items-center bg-muted/40 border-y">
                   <p className="px-4 font-semibold tracking-tight">
                     {unitType.name}
                   </p>
