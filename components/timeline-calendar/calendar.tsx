@@ -7,6 +7,7 @@ import BookingComponent from "./booking-component";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { cellWidth, drawGrid, drawPricesAndRooms } from "./utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function TimelineCalendar() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,6 +97,8 @@ export function TimelineCalendar() {
     setCurrentDate(dayjs().startOf("month"));
   };
 
+  const isMobile = useIsMobile()
+
   return (
     <div className="mx-auto w-full max-w-screen-xl">
       <div className="mb-4 flex items-center justify-between">
@@ -117,7 +120,7 @@ export function TimelineCalendar() {
       <div className="relative flex h-[calc(100vh-200px)] w-full overflow-hidden rounded-lg border-[2px]">
         <div
           ref={sidebarRef}
-          className="sticky left-0 top-0 z-20 flex min-w-[250px] flex-col bg-background overflow-y-auto"
+          className="sticky left-0 top-0 z-20 flex md:min-w-[250px] flex-col bg-background overflow-y-auto"
         >
           <div>
             <h3 className="w-full items-center flex px-4 h-[50px] font-semibold border-r">
@@ -146,7 +149,7 @@ export function TimelineCalendar() {
                           : "bg-muted text-muted-foreground"
                       )}
                     >
-                      {room.status}
+                      {isMobile ? <></> : <>{room.status}</>}
                     </p>
                   </div>
                 ))}

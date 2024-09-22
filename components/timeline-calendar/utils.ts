@@ -102,6 +102,4 @@ export function drawPricesAndRooms(
   ctx.lineTo(ctx.canvas.width, currentY);
   ctx.strokeStyle = borderColor;
   ctx.stroke();
-
-  console.log("Finished drawing prices and rooms");
 }

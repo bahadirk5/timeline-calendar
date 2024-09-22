@@ -49,9 +49,9 @@ const BookingComponent: React.FC<Props> = ({
   const bookingWidth = (adjustedEnd - adjustedStart + 1) * cellWidth;
   const styles = {
     left: `${(adjustedStart + 0.5) * cellWidth}px`,
-    width: `${bookingWidth - 4}px`, // Boşluk için genişliği biraz küçült
+    width: `${bookingWidth - 4}px`,
     top: `${yOffset + 5}px`,
-    marginRight: "4px", // Yan yana rezervasyonlar arasına boşluk ekler
+    marginRight: "4px",
   };
 
   const startDate = dayjs(booking.startDate);
@@ -61,16 +61,15 @@ const BookingComponent: React.FC<Props> = ({
     <div className="relative mr-2">
       <HoverCard>
         <HoverCardTrigger
-          // className={cn(
-          //   "absolute flex h-10 items-center rounded-lg px-2 shadow",
-          //   booking.status === "confirmed" &&
-          //     "bg-blue-400 text-primary-foreground hover:bg-blue-400/90",
-          //   booking.status === "checked-in" &&
-          //     "bg-yellow-400 text-primary-foreground hover:bg-yellow-400/90",
-          //   booking.status === "checked-out" &&
-          //     "bg-green-400 text-primary-foreground hover:bg-green-400/90",
-          // )}
-          className="absolute flex h-10 items-center justify-between rounded-lg border bg-primary px-2 text-xs text-primary-foreground"
+          className={cn(
+            "absolute flex h-10 items-center justify-between rounded-lg border px-2 text-xs",
+            booking.status === "confirmed" &&
+              "bg-blue-500 text-primary-foreground hover:bg-blue-500/90",
+            booking.status === "checked-in" &&
+              "bg-green-500 text-primary-foreground hover:bg-green-500/90",
+            booking.status === "checked-out" &&
+              "bg-slate-800 text-primary-foreground hover:bg-slate-800/90"
+          )}
           style={styles}
         >
           <span>{booking.guestName}</span>
@@ -87,7 +86,7 @@ const BookingComponent: React.FC<Props> = ({
                 "rounded-md px-2 py-1 font-medium",
                 booking.status === "confirmed"
                   ? " bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-400",
+                  : "bg-red-100 text-red-400"
               )}
             >
               <p className="text-xs">{booking.status}</p>
